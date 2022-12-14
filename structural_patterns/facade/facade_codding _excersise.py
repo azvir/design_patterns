@@ -18,12 +18,14 @@ from random import randint
 
 
 class Generator:
-    def generate(self, count):
-        return [randint(1, 9) for x in range(count)]
+    @staticmethod
+    def generate(count):
+        return [randint(1, 9) for _ in range(count)]
 
 
 class Splitter:
-    def split(self, array):
+    @staticmethod
+    def split(array):
         result = []
 
         row_count = len(array)
@@ -59,27 +61,30 @@ class Splitter:
 
 
 class Verifier:
-    def verify(self, arrays):
-        first = sum(arrays[0])
+    @staticmethod
+    def verify(arrays):
+        first_row_sum = sum(arrays[0])
 
         for i in range(1, len(arrays)):
-            if sum(arrays[i]) != first:
+            if sum(arrays[i]) != first_row_sum:
                 return False
 
         return True
 
 
 class MagicSquareGenerator:
+    def __init__(self):
+        self.generator = Generator()
+        self.splitter = Splitter()
+        self.verifier = Verifier()
+
     def generate(self, size):
-        g = Generator()
-        s = Splitter()
-        v = Verifier()
-        ms = [g.generate(size) for _ in range(size)]
-        while not v.verify(s.split(ms)):
-            ms = [g.generate(size) for _ in range(size)]
-        return ms
+        magic_square = [self.generator.generate(size) for _ in range(size)]
+        while not self.verifier.verify(self.splitter.split(magic_square)):
+            magic_square = [self.generator.generate(size) for _ in range(size)]
+        return magic_square
 
 
 def test_generator():
-    msgen = MagicSquareGenerator()
-    assert Verifier().verify(msgen.generate(3))
+    magic_square_generator = MagicSquareGenerator()
+    assert Verifier().verify(magic_square_generator.generate(3))
